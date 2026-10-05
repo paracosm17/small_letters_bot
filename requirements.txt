@@ -1,0 +1,10 @@
+aiogram
+environs
+redis
+betterlogging
+sqlalchemy
+aiogram_dialog
+
+sqlalchemy
+alembic
+asyncpg
