@@ -1,32 +1,43 @@
-
-# migration safety baseline
-.env
-.env.*
-!.env.example
+# Python
+__pycache__/
+*.py[cod]
 .venv/
 venv/
 env/
-__pycache__/
-*.py[cod]
 .pytest_cache/
 .ruff_cache/
 .coverage
 htmlcov/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Runtime / legacy state
 *.db
 *.sqlite
 *.sqlite3
 *.sql
 *.dump
 cache/
-redis_cache/
-grafana-data/
 tmp/
 *.log
+
+# Keys / private material
 *.pem
 *.key
 *.p12
 *.pfx
 id_rsa
 id_ed25519
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Migration artifacts
 *.bundle
 *.patch.rej

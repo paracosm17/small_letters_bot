@@ -1,5 +1,3 @@
-import logging
-
 small_letters = {
     chr(1072): chr(11766),
     chr(1073): chr(11744),
@@ -33,41 +31,39 @@ small_letters = {
     chr(1100): chr(42618),
     chr(1101): chr(42612),
     chr(1102): chr(11771),
-    chr(1103): chr(11769)
+    chr(1103): chr(11769),
 }
 
 
-def make(text: str, uptext: str):
-    text = text.split()
+def make(text: str, uptext: str) -> str:
+    text_words = text.split()
 
-    new_uptext = ""
-    for character in uptext.lower():
-        if character.isalpha() or character == " ":
-            new_uptext += character
+    filtered_uptext = "".join(
+        character for character in uptext.lower() if character.isalpha() or character == " "
+    )
+    uptext_words = filtered_uptext.translate(filtered_uptext.maketrans(small_letters)).split()
 
-    uptext = new_uptext.translate(new_uptext.maketrans(small_letters)).split()
-
-    for idx, upword in enumerate(uptext):
+    for index, upword in enumerate(uptext_words):
         result_word = ""
-        if idx < len(text):
-            word = text[idx].ljust(len(upword)) if len(text[idx]) < len(upword) else text[idx]
+        if index < len(text_words):
+            word = text_words[index].ljust(len(upword))
+            if len(text_words[index]) >= len(upword):
+                word = text_words[index]
 
-            # FEATURE
-            if text[idx].endswith("*"):
-                result_word = text[idx][:-1]
-                for uw in upword:
-                    result_word += " " + uw
-                text[idx] = result_word
+            if text_words[index].endswith("*"):
+                result_word = text_words[index][:-1]
+                for upper_character in upword:
+                    result_word += " " + upper_character
+                text_words[index] = result_word
             else:
-                for w, uw in zip(word, upword):
-                    result_word += w + uw
+                for lower_character, upper_character in zip(word, upword, strict=False):
+                    result_word += lower_character + upper_character
                 if len(word) > len(upword):
-                    result_word += word[len(upword):]
-                text[idx] = result_word
-
+                    result_word += word[len(upword) :]
+                text_words[index] = result_word
         else:
-            for uw in upword:
-                result_word += " " + uw
-            text.append(result_word)
+            for upper_character in upword:
+                result_word += " " + upper_character
+            text_words.append(result_word)
 
-    return " ".join(text)
+    return " ".join(text_words)

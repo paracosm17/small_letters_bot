@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from infrastructure.database.repo.users import UserRepo
 
 
-@dataclass
+@dataclass(slots=True)
 class RequestsRepo:
     session: AsyncSession
 

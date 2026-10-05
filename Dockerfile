@@ -1,16 +1,38 @@
-FROM python:3.11-slim
+FROM ghcr.io/astral-sh/uv:0.12.19 AS uv
 
-RUN apt-get update && \
-    apt-get install -y locales && \
-    sed -i -e 's/# ru_RU.UTF-8 UTF-8/ru_RU.UTF-8 UTF-8/' /etc/locale.gen && \
-    dpkg-reconfigure --frontend=noninteractive locales
-ENV LANG ru_RU.UTF-8
-ENV LC_ALL ru_RU.UTF-8
+FROM python:3.13.15-slim-bookworm
 
-ENV BOT_NAME=simple_bot
+ARG VCS_REF=unknown
+LABEL org.opencontainers.image.source="https://github.com/paracosm17/small_letters_bot" \
+      org.opencontainers.image.revision="${VCS_REF}"
 
-WORKDIR /usr/src/app/${BOT_NAME}
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    RELEASE_REVISION=${VCS_REF} \
+    WEB_SERVER_HOST=0.0.0.0 \
+    PORT=8080
 
-COPY requirements.txt /usr/src/app/${BOT_NAME}
-RUN pip install -r /usr/src/app/${BOT_NAME}/requirements.txt
-COPY . /usr/src/app/${BOT_NAME}
+COPY --from=uv /uv /uvx /bin/
+
+WORKDIR /app
+
+COPY requirements.txt ./
+RUN uv pip install --system --no-cache -r requirements.txt
+
+COPY . .
+
+RUN groupadd --gid 10001 app \
+    && useradd --uid 10001 --gid 10001 --create-home app \
+    && chown -R 10001:10001 /app
+
+USER 10001:10001
+
+EXPOSE 8080
+STOPSIGNAL SIGTERM
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3).read()"
+
+CMD ["python", "-m", "bot"]

@@ -1,26 +1,12 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
-def construct_markup(rm: dict | None) -> InlineKeyboardMarkup | None:
-    """
+def construct_markup(value: dict | None) -> InlineKeyboardMarkup | None:
+    if value is None:
+        return None
 
-    Parameters
-    ----------
-    rm: dict
+    for row in value["inline_keyboard"]:
+        for index, button in enumerate(row):
+            row[index] = InlineKeyboardButton.model_construct(**button)
 
-    Returns: InlineKeyboardMarkup
-    -------
-
-    Чтобы можно было прокидывать InlineKeyboardMarkup через redis, необходимо сериализовать ее в словарь, с помощью
-    .model_dump()
-
-    В этой функции сериализованная клавиатура обратно десериализуется в объект InlineKeyboardMarkup
-    """
-    if rm is None:
-        return rm
-
-    for row in rm["inline_keyboard"]:
-        for idx, button in enumerate(row):
-            row[idx] = InlineKeyboardButton.model_construct(**button)
-
-    return InlineKeyboardMarkup.model_construct(**rm)
+    return InlineKeyboardMarkup.model_construct(**value)
