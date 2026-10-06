@@ -38,16 +38,13 @@ Only `main` is a deployment branch.
 
 ```text
 main -> quality -> PostgreSQL 18 preflight -> image publish
-     -> exact digest smoke verification -> Coolify production
+     -> exact digest smoke verification
 ```
 
-Automatic production deployment is gated by repository variable:
+Production deployment is intentionally manual in the Coolify UI.
 
-```text
-DEPLOY_PRODUCTION_ENABLED
-```
-
-Keep it `false` until production data is restored and smoke validation is complete.
+GitHub Actions never changes Coolify resources. CI only validates the application and
+publishes an immutable GHCR image. Paste the exact published digest into Coolify manually.
 
 ## Setup / quality
 
