@@ -11,7 +11,7 @@ dependencies = [
     "asyncpg==0.31.0",
     "environs==14.6.0",
     "redis==7.3.0",
-    "SQLAlchemy==2.0.48",
+    "SQLAlchemy==2.1.6",
 ]
 
 [tool.ruff]
